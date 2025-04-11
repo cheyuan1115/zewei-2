@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#ffe4e1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>星座香氛推薦</title>
@@ -74,23 +70,9 @@
       border-radius: 0.3rem;
       width: 180px;
     }
-    #installBtn {
-      position: relative;
-      display: none;
-      margin: 0 auto 1rem;
-      padding: 0.5rem 1rem;
-      background-color: #ff9800;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      font-size: 1rem;
-    }
   </style>
 </head>
 <body>
-  <div style="text-align: center;">
-    <button id="installBtn">📲 加入主畫面</button>
-  </div>
   <h1>星座香氛推薦</h1>
   <div class="form">
     <label>輸入生日（YYYY-MM-DD）：</label>
@@ -100,8 +82,6 @@
   <div id="result"></div>
 
   <script>
-    let deferredPrompt = null;
-
     const zodiacMap = [...{
       sign: '摩羯座', start: '01-01', end: '01-19', icon: '♑'
     }, {
@@ -151,8 +131,6 @@
       const resultDiv = document.getElementById('result');
       resultDiv.innerHTML = '';
 
-      console.log("輸入的生日:", date);
-
       if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
         resultDiv.innerHTML = '<p class="error">請輸入正確格式的生日，例如 1990-04-11</p>';
         return;
@@ -162,11 +140,9 @@
 
       const [year, month, day] = date.split('-').map(Number);
       const { sign: zodiac, icon } = getZodiac(month, day);
-      console.log("計算出的星座:", zodiac);
 
       try {
         const res = await axios.get('https://script.google.com/macros/s/AKfycbz_MCZrjkTqdYI1coLdax2YAd4ZPJkOuSHvmbjjCvM90VCcpNpWLMnsO6wbgUfDOfT5hw/exec');
-        console.log("API 回傳資料:", res.data);
         const data = res.data.find(item => item.Zodiac === zodiac);
 
         if (!data) {
@@ -187,36 +163,4 @@
           </div>
         `;
       } catch (error) {
-        console.error("API 請求失敗:", error);
-        resultDiv.innerHTML = '<p class="error">無法取得資料，請稍後再試。</p>';
-      }
-    }
-
-    window.addEventListener("beforeinstallprompt", (e) => {
-      console.log("觸發 beforeinstallprompt");
-      e.preventDefault();
-      deferredPrompt = e;
-      const installBtn = document.getElementById("installBtn");
-      installBtn.style.display = "inline-block";
-      installBtn.onclick = async () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          const { outcome } = await deferredPrompt.userChoice;
-          console.log("使用者選擇：", outcome);
-          deferredPrompt = null;
-        }
-      };
-    });
-
-    window.onload = () => {
-      loadBirthdayFromLocalStorage();
-    };
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js')
-        .then(reg => console.log('Service Worker 註冊成功:', reg.scope))
-        .catch(err => console.error('Service Worker 註冊失敗:', err));
-    }
-  </script>
-</body>
-</html>
+        resultDiv.innerHTML = '<p class="er
