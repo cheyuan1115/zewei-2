@@ -159,7 +159,26 @@
       }
     }
 
-    window.onload = loadBirthdayFromLocalStorage;
+    window.onload = () => {
+      loadBirthdayFromLocalStorage();
+      // 強制顯示安裝提示按鈕（即使 beforeinstallprompt 尚未觸發）
+      const fallbackBtn = document.createElement('button');
+      fallbackBtn.textContent = '📲 加入主畫面';
+      fallbackBtn.style.position = 'fixed';
+      fallbackBtn.style.bottom = '20px';
+      fallbackBtn.style.right = '20px';
+      fallbackBtn.style.padding = '0.5rem 1rem';
+      fallbackBtn.style.backgroundColor = '#ccc';
+      fallbackBtn.style.color = 'black';
+      fallbackBtn.style.border = 'none';
+      fallbackBtn.style.borderRadius = '5px';
+      fallbackBtn.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+      fallbackBtn.style.zIndex = '999';
+      fallbackBtn.onclick = () => {
+        alert('請使用瀏覽器功能手動加入主畫面，例如 Chrome 右上角選單 → 加入主畫面');
+      };
+      document.body.appendChild(fallbackBtn);
+    };
   </script>
 <script>
   let deferredPrompt;
