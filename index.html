@@ -76,7 +76,7 @@
     }
     #installBtn {
       position: relative;
-      display: inline-block;
+      display: none;
       margin: 0 auto 1rem;
       padding: 0.5rem 1rem;
       background-color: #ff9800;
@@ -93,13 +93,15 @@
   </div>
   <h1>星座香氛推薦</h1>
   <div class="form">
-    <label>輸入生日test（YYYY-MM-DD）：</label>
+    <label>輸入生日（YYYY-MM-DD）：</label>
     <input type="text" id="birthdate" placeholder="例如 1990-04-11" />
     <button onclick="getHoroscope()">查看運勢</button>
   </div>
   <div id="result"></div>
 
   <script>
+    let deferredPrompt = null;
+
     const zodiacMap = [...{
       sign: '摩羯座', start: '01-01', end: '01-19', icon: '♑'
     }, {
@@ -149,6 +151,8 @@
       const resultDiv = document.getElementById('result');
       resultDiv.innerHTML = '';
 
+      console.log("輸入的生日:", date);
+
       if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
         resultDiv.innerHTML = '<p class="error">請輸入正確格式的生日，例如 1990-04-11</p>';
         return;
@@ -158,9 +162,11 @@
 
       const [year, month, day] = date.split('-').map(Number);
       const { sign: zodiac, icon } = getZodiac(month, day);
+      console.log("計算出的星座:", zodiac);
 
       try {
         const res = await axios.get('https://script.google.com/macros/s/AKfycbz_MCZrjkTqdYI1coLdax2YAd4ZPJkOuSHvmbjjCvM90VCcpNpWLMnsO6wbgUfDOfT5hw/exec');
+        console.log("API 回傳資料:", res.data);
         const data = res.data.find(item => item.Zodiac === zodiac);
 
         if (!data) {
@@ -181,18 +187,29 @@
           </div>
         `;
       } catch (error) {
+        console.error("API 請求失敗:", error);
         resultDiv.innerHTML = '<p class="error">無法取得資料，請稍後再試。</p>';
       }
     }
 
+    window.addEventListener("beforeinstallprompt", (e) => {
+      console.log("觸發 beforeinstallprompt");
+      e.preventDefault();
+      deferredPrompt = e;
+      const installBtn = document.getElementById("installBtn");
+      installBtn.style.display = "inline-block";
+      installBtn.onclick = async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log("使用者選擇：", outcome);
+          deferredPrompt = null;
+        }
+      };
+    });
+
     window.onload = () => {
       loadBirthdayFromLocalStorage();
-
-      const installBtn = document.getElementById('installBtn');
-      installBtn.style.display = 'block';
-      installBtn.onclick = () => {
-        alert('請使用瀏覽器功能手動加入主畫面，例如 Chrome 右上角選單 → 加入主畫面');
-      };
     };
 
     if ('serviceWorker' in navigator) {
