@@ -75,29 +75,29 @@
       width: 180px;
     }
     #installBtn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
+      position: relative;
+      display: inline-block;
+      margin: 0 auto 1rem;
       padding: 0.5rem 1rem;
       background-color: #ff9800;
       color: white;
       border: none;
       border-radius: 5px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-      z-index: 1000;
-      display: block;
+      font-size: 1rem;
     }
   </style>
 </head>
 <body>
-  <h1>星座香氛推薦</h1>
+  <div style="text-align: center;">
+    <button id="installBtn">📲 加入主畫面</button>
+  </div>
+  <h1>星座香氛推薦 new</h1>
   <div class="form">
     <label>輸入生日（YYYY-MM-DD）：</label>
     <input type="text" id="birthdate" placeholder="例如 1990-04-11" />
     <button onclick="getHoroscope()">查看運勢</button>
   </div>
   <div id="result"></div>
-  <button id="installBtn">📲 加入主畫面</button>
 
   <script>
     const zodiacMap = [...{
