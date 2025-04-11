@@ -165,6 +165,9 @@
   let deferredPrompt;
   window.addEventListener('beforeinstallprompt', (e) => {
     console.log('beforeinstallprompt fired');
+    // 自動模擬使用者互動以觸發安裝提示
+    setTimeout(() => document.body.click(), 1000);
+    console.log('beforeinstallprompt fired');
     e.preventDefault();
     deferredPrompt = e;
     const installBtn = document.createElement('button');
