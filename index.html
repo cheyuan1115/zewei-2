@@ -63,6 +63,15 @@
     .recommend-box small {
       color: #666;
     }
+    .moon-phase-box {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #f0f8ff;
+      border-left: 4px solid #2196f3;
+      border-radius: 0.5rem;
+      text-align: center;
+      font-weight: bold;
+    }
     input[type="text"] {
       padding: 0.5rem;
       font-size: 1rem;
@@ -126,6 +135,22 @@
       }
     }
 
+    function getMoonPhaseText(date) {
+      const knownNewMoon = new Date('2000-01-06T18:14:00Z');
+      const synodicMonth = 29.530588853;
+      const daysSinceNew = (date - knownNewMoon) / 1000 / 60 / 60 / 24;
+      const currentPhase = daysSinceNew % synodicMonth;
+
+      if (currentPhase < 1.84566) return '🌑 新月：適合設定新目標與冥想啟動';
+      if (currentPhase < 5.53699) return '🌓 上弦月：適合採取行動與實踐計畫';
+      if (currentPhase < 9.22831) return '🌔 盈凸月：加強信念、持續努力';
+      if (currentPhase < 12.91963) return '🌕 滿月：適合釋放壓力與感恩';
+      if (currentPhase < 16.61096) return '🌖 虧凸月：釐清情緒、沉澱回顧';
+      if (currentPhase < 20.30228) return '🌗 下弦月：放下執著、調整方向';
+      if (currentPhase < 23.99361) return '🌘 殘月：適合療癒、休養與休息';
+      return '🌑 新月前夕：預備清空與重啟';
+    }
+
     async function getHoroscope() {
       const date = document.getElementById('birthdate').value.trim();
       const resultDiv = document.getElementById('result');
@@ -150,6 +175,8 @@
           return;
         }
 
+        const moonPhase = getMoonPhaseText(new Date());
+
         resultDiv.innerHTML = `
           <div class="card">
             <div class="icon">${icon}</div>
@@ -160,7 +187,17 @@
               <p style="margin: 0;"><strong>推薦香氛：</strong>${data.Recommend || '無資料'}</p>
               <small>適合用於今天的能量調整與香氛冥想</small>
             </div>
+            <div class="moon-phase-box">${moonPhase}</div>
           </div>
         `;
       } catch (error) {
-        resultDiv.innerHTML = '<p class="er
+        resultDiv.innerHTML = '<p class="error">無法取得資料，請稍後再試。</p>';
+      }
+    }
+
+    window.onload = () => {
+      loadBirthdayFromLocalStorage();
+    };
+  </script>
+</body>
+</html>
